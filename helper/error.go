@@ -2,6 +2,7 @@ package helper
 
 type ErrorInterface interface {
 	Code() int
+	HttpCode() int
 	Message() string
 }
 
