@@ -18,6 +18,7 @@ func Start() {
 	r := gin.Default()
 	r.Use(middleware.WithLoggerMiddleware())
 	r.Use(middleware.WithGormMiddleware())
+	r.Use(middleware.ReturnErrorMiddleware())
 
 	for _, router := range RouterList {
 		router.AddRoute(r)
