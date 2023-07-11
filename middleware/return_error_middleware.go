@@ -14,7 +14,7 @@ func ReturnErrorMiddleware() gin.HandlerFunc {
 			for _, err := range ctx.Errors {
 				logger.Error(ctx, "error: %v", err)
 			}
-			err, ok := ctx.Value("error").(helper.ErrorInterface)
+			err, ok := ctx.Errors.Last().Err.(helper.ErrorInterface)
 			if ok && err != nil {
 				err = helper.ErrorMap[err.Code()]
 				ctx.JSON(err.HttpCode(), gin.H{
