@@ -9,7 +9,7 @@ import (
 func ReturnErrorMiddleware() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		ctx.Next()
-		logger := ctx.MustGet("logger").(helper.Logger)
+		logger := ctx.MustGet("logger").(*helper.Logger)
 		if len(ctx.Errors) > 0 {
 			for _, err := range ctx.Errors {
 				logger.Error(ctx, "error: %v", err)
