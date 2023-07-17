@@ -6,6 +6,24 @@ type ErrorInterface interface {
 	Message() string
 }
 
+type BaseError struct {
+	code     int
+	message  string
+	httpCode int
+}
+
+func (e *BaseError) Error() string {
+	return e.message
+}
+
+func (e *BaseError) Code() int {
+	return e.code
+}
+
+func (e *BaseError) HttpCode() int {
+	return e.httpCode
+}
+
 var ErrorMap = map[int]ErrorInterface{}
 
 func AddError(err ErrorInterface) {
