@@ -14,7 +14,7 @@ import (
 	"github.com/img21326/andrew_framework/middleware"
 )
 
-func Start() {
+func InitServer() *gin.Engine {
 	r := gin.Default()
 	r.Use(middleware.WithLoggerMiddleware())
 	r.Use(middleware.WithGormMiddleware())
@@ -23,10 +23,13 @@ func Start() {
 	for _, router := range RouterList {
 		router.AddRoute(r)
 	}
+	return r
+}
 
+func Start() {
 	srv := &http.Server{
 		Addr:    ":8000",
-		Handler: r,
+		Handler: InitServer(),
 	}
 
 	go func() {
