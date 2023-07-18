@@ -9,6 +9,9 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/aws/aws-lambda-go/events"
+	"github.com/aws/aws-lambda-go/lambda"
+	ginAdapter "github.com/awslabs/aws-lambda-go-api-proxy/gin"
 	"github.com/gin-gonic/gin"
 	"github.com/img21326/andrew_framework/helper"
 	"github.com/img21326/andrew_framework/middleware"
@@ -54,4 +57,16 @@ func Start() {
 		log.Println("timeout of 5 seconds.")
 	}
 	log.Println("Server exiting")
+}
+
+func StartAWSLambda() {
+	var ginLambda *ginAdapter.GinLambda
+
+	handler := func(ctx context.Context, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+		return ginLambda.ProxyWithContext(ctx, req)
+	}
+
+	r := InitServer()
+	ginLambda = ginAdapter.New(r)
+	lambda.Start(handler)
 }
