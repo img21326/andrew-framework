@@ -6,17 +6,13 @@ import (
 	"github.com/img21326/andrew_framework/helper"
 
 	"github.com/gin-gonic/gin"
-	uuid "github.com/google/uuid"
 )
 
-func WithLoggerMiddleware() gin.HandlerFunc {
+func WithRequestLogMiddleware() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		logger := ctx.MustGet("logger").(*helper.Logger)
 		startTime := time.Now()
-		uuid := uuid.New().String()
-		logger := helper.NewLogger(uuid)
 
-		ctx.Set("logger", logger)
-		ctx.Set("uuid", uuid)
 		body, err := ctx.GetRawData()
 		if err != nil {
 			logger.Error(ctx, "get raw data error: %v", err)
@@ -24,6 +20,7 @@ func WithLoggerMiddleware() gin.HandlerFunc {
 		logger.Info(ctx, "request params: %+v, request data: %+v", ctx.Request.URL.Query(), string(body))
 
 		ctx.Next()
+
 		endTime := time.Now()
 		latencyTime := endTime.Sub(startTime)
 		reqMethod := ctx.Request.Method

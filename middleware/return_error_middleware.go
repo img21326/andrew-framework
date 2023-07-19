@@ -22,6 +22,8 @@ func ReturnErrorMiddleware() gin.HandlerFunc {
 					"message": err.Message(),
 				})
 				ctx.Abort()
+			} else {
+				panic("undefined error")
 			}
 		}
 	}

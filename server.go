@@ -19,7 +19,10 @@ import (
 
 func InitServer() *gin.Engine {
 	r := gin.Default()
+
 	r.Use(middleware.WithLoggerMiddleware())
+	r.Use(middleware.WithRecoverMiddleware())
+	r.Use(middleware.WithRequestLogMiddleware())
 	r.Use(middleware.WithGormMiddleware())
 	r.Use(middleware.ReturnErrorMiddleware())
 
