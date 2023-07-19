@@ -6,6 +6,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/gin-gonic/gin"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -46,4 +47,8 @@ func NewGorm(option GormOption) *gorm.DB {
 		panic(err)
 	}
 	return gorm
+}
+
+func GetGorm(ctx *gin.Context) *gorm.DB {
+	return ctx.MustGet("gorm").(*gorm.DB)
 }
