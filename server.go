@@ -26,6 +26,12 @@ func InitServer() *gin.Engine {
 	r.Use(middleware.WithGormMiddleware())
 	r.Use(middleware.ReturnErrorMiddleware())
 
+	r.GET("/status", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"status": 1,
+		})
+	})
+
 	for _, router := range RouterList {
 		router.AddRoute(r)
 	}
