@@ -2,6 +2,7 @@ package helper
 
 import (
 	"database/sql"
+	"fmt"
 	"sync"
 	"time"
 
@@ -29,7 +30,7 @@ type DBOption struct {
 func InitDB(option DBOption) {
 	once.Do(func() {
 		var err error
-		DB, err = sql.Open("pgx", "host="+option.Host+" port="+option.Port+" user="+option.User+" password="+option.Password+" dbname="+option.DBName+" sslmode=disable TimeZone=Asia/Shanghai")
+		DB, err = sql.Open("pgx", fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable TimeZone=Asia/Taipei", option.Host, option.Port, option.User, option.Password, option.DBName))
 		if err != nil {
 			panic(err)
 		}

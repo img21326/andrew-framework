@@ -1,9 +1,8 @@
 package andrewframework
 
 import (
-	"bytes"
 	"context"
-	"io/ioutil"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -21,13 +20,14 @@ import (
 )
 
 func readConf() {
-	content, err := ioutil.ReadFile("env.yaml")
+	viper.SetConfigName("env")
+	viper.SetConfigType("yaml")
+	viper.AddConfigPath(".")
 
-	if err != nil {
-		panic(err)
+	if err := viper.ReadInConfig(); err != nil {
+		fmt.Printf("Error reading config file: %s", err)
+		return
 	}
-
-	viper.ReadConfig(bytes.NewBuffer(content))
 }
 
 func InitServer() *gin.Engine {
@@ -40,6 +40,7 @@ func InitServer() *gin.Engine {
 		Password: viper.GetString("db.password"),
 		DBName:   viper.GetString("db.dbname"),
 	}
+	fmt.Printf("%+v\n", viper.AllSettings())
 	helper.InitDB(dbOption)
 
 	r := gin.Default()
