@@ -2,7 +2,6 @@ package helper
 
 import (
 	"database/sql"
-	"os"
 	"sync"
 	"time"
 
@@ -19,10 +18,18 @@ var DB *sql.DB
 
 var once sync.Once
 
-func init() {
+type DBOption struct {
+	Host     string
+	Port     string
+	User     string
+	Password string
+	DBName   string
+}
+
+func InitDB(option DBOption) {
 	once.Do(func() {
 		var err error
-		DB, err = sql.Open("pgx", os.Getenv("DATABASE_URL"))
+		DB, err = sql.Open("pgx", "host="+option.Host+" port="+option.Port+" user="+option.User+" password="+option.Password+" dbname="+option.DBName+" sslmode=disable TimeZone=Asia/Shanghai")
 		if err != nil {
 			panic(err)
 		}
@@ -50,5 +57,5 @@ func NewGorm(option GormOption) *gorm.DB {
 }
 
 func GetGorm(ctx *gin.Context) *gorm.DB {
-	return ctx.MustGet("gorm").(*gorm.DB)
+	return ctx.MustGet("gormDB").(*gorm.DB)
 }

@@ -1,7 +1,9 @@
 package andrewframework
 
 import (
+	"bytes"
 	"context"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -15,9 +17,31 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/img21326/andrew_framework/helper"
 	"github.com/img21326/andrew_framework/middleware"
+	"github.com/spf13/viper"
 )
 
+func readConf() {
+	content, err := ioutil.ReadFile("env.yaml")
+
+	if err != nil {
+		panic(err)
+	}
+
+	viper.ReadConfig(bytes.NewBuffer(content))
+}
+
 func InitServer() *gin.Engine {
+	readConf()
+
+	dbOption := helper.DBOption{
+		Host:     viper.GetString("db.host"),
+		Port:     viper.GetString("db.port"),
+		User:     viper.GetString("db.user"),
+		Password: viper.GetString("db.password"),
+		DBName:   viper.GetString("db.dbname"),
+	}
+	helper.InitDB(dbOption)
+
 	r := gin.Default()
 
 	r.Use(middleware.WithLoggerMiddleware())
