@@ -13,7 +13,7 @@ func WithRequestLogMiddleware() gin.HandlerFunc {
 		logger := ctx.MustGet("logger").(*helper.Logger)
 		startTime := time.Now()
 
-		body, err := ctx.GetRawData()
+		body, err := ctx.Copy().GetRawData()
 		if err != nil {
 			logger.Error(ctx, "get raw data error: %v", err)
 		}
