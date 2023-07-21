@@ -16,9 +16,9 @@ func ReturnErrorMiddleware() gin.HandlerFunc {
 			}
 			err, ok := ctx.Errors.Last().Err.(helper.ErrorInterface)
 			if ok && err != nil {
-				err = helper.ErrorMap[err.Code()]
-				ctx.JSON(err.HttpCode(), gin.H{
-					"code":    err.Code(),
+				err = helper.ErrorMap[err.ErrorCode()]
+				ctx.JSON(err.HttpStatus(), gin.H{
+					"code":    err.ErrorCode(),
 					"message": err.Message(),
 				})
 				ctx.Abort()

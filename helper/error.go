@@ -1,38 +1,38 @@
 package helper
 
 type ErrorInterface interface {
-	Code() int
-	HttpCode() int
+	ErrorCode() int
+	HttpStatus() int
 	Message() string
 }
 
 type BaseError struct {
-	code     int
-	message  string
-	httpCode int
+	Code     int
+	Message  string
+	HttpCode int
 }
 
 func (e *BaseError) ErrorMessage(msg string) {
-	e.message = msg
+	e.Message = msg
 }
 
 func (e *BaseError) Error() string {
-	return e.message
+	return e.Message
 }
 
-func (e *BaseError) Code() int {
-	return e.code
+func (e *BaseError) ErrorCode() int {
+	return e.Code
 }
 
-func (e *BaseError) HttpCode() int {
-	return e.httpCode
+func (e *BaseError) HttpStatus() int {
+	return e.HttpCode
 }
 
 var ErrorMap = map[int]ErrorInterface{}
 
 func AddError(err ErrorInterface) {
-	if _, ok := ErrorMap[err.Code()]; ok {
+	if _, ok := ErrorMap[err.ErrorCode()]; ok {
 		panic("Error code already exists")
 	}
-	ErrorMap[err.Code()] = err
+	ErrorMap[err.ErrorCode()] = err
 }
