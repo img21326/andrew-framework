@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"bytes"
 	"io"
 	"time"
 
@@ -14,11 +15,12 @@ func WithRequestLogMiddleware() gin.HandlerFunc {
 		logger := ctx.MustGet("logger").(*helper.Logger)
 		startTime := time.Now()
 
-		body, err := io.ReadAll(ctx.Copy().Request.Body)
+		body, err := io.ReadAll(ctx.Request.Body)
 		if err != nil {
 			logger.Error(ctx, "get raw data error: %v", err)
 		}
 		logger.Info(ctx, "request params: %+v, request data: %+v", ctx.Request.URL.Query(), string(body))
+		ctx.Request.Body = io.NopCloser(bytes.NewBuffer(body))
 
 		ctx.Next()
 
