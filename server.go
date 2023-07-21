@@ -19,7 +19,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-func readConf() {
+func ReadConf() {
 	viper.SetConfigName("env")
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath(".")
@@ -30,9 +30,7 @@ func readConf() {
 	}
 }
 
-func InitServer() *gin.Engine {
-	readConf()
-
+func InitDB() {
 	dbOption := helper.DBOption{
 		Host:     viper.GetString("db.host"),
 		Port:     viper.GetString("db.port"),
@@ -42,7 +40,11 @@ func InitServer() *gin.Engine {
 	}
 	fmt.Printf("%+v\n", viper.AllSettings())
 	helper.InitDB(dbOption)
+}
 
+func InitServer() *gin.Engine {
+	ReadConf()
+	InitDB()
 	r := gin.Default()
 
 	r.Use(middleware.WithLoggerMiddleware())
