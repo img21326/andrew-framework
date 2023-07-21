@@ -12,6 +12,10 @@ type BaseError struct {
 	httpCode int
 }
 
+func (e *BaseError) ErrorMessage(msg string) {
+	e.message = msg
+}
+
 func (e *BaseError) Error() string {
 	return e.message
 }
