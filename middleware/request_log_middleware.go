@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"io"
 	"time"
 
 	"github.com/img21326/andrew_framework/helper"
@@ -13,7 +14,7 @@ func WithRequestLogMiddleware() gin.HandlerFunc {
 		logger := ctx.MustGet("logger").(*helper.Logger)
 		startTime := time.Now()
 
-		body, err := ctx.Copy().GetRawData()
+		body, err := io.ReadAll(ctx.Copy().Request.Body)
 		if err != nil {
 			logger.Error(ctx, "get raw data error: %v", err)
 		}
