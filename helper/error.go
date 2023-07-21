@@ -3,7 +3,7 @@ package helper
 type ErrorInterface interface {
 	ErrorCode() int
 	HttpStatus() int
-	Message() string
+	Error() string
 }
 
 type BaseError struct {
@@ -12,7 +12,11 @@ type BaseError struct {
 	HttpCode int
 }
 
-func (e *BaseError) ErrorMessage(msg string) {
+func New() ErrorInterface {
+	return &BaseError{}
+}
+
+func (e *BaseError) SetErrMsg(msg string) {
 	e.Message = msg
 }
 
