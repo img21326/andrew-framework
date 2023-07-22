@@ -34,6 +34,13 @@ func NewS3Helper(accessKey, secretKey, region, bucket string) *S3Helper {
 	return S3HelperInstance
 }
 
+func GetS3Instance() *S3Helper {
+	if S3HelperInstance == nil {
+		panic("S3Helper not init")
+	}
+	return S3HelperInstance
+}
+
 func (s *S3Helper) CreateFolder(folderName string, isPublic bool) error {
 	config := &s3.PutObjectInput{
 		Bucket: aws.String(s.bucket),
