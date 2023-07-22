@@ -5,6 +5,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/gin-gonic/gin"
 	"github.com/natefinch/lumberjack"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -41,8 +42,8 @@ func WaitForLoggerComplete() {
 	logger.Sync()
 }
 
-func GetLogger() *zap.SugaredLogger {
-	return logger.Sugar()
+func GetLogger(ctx *gin.Context) *Logger {
+	return ctx.MustGet("logger").(*Logger)
 }
 
 type Logger struct {
