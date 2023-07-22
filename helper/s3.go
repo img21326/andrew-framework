@@ -16,16 +16,22 @@ type S3Helper struct {
 	region string
 }
 
+var S3HelperInstance *S3Helper
+
 func NewS3Helper(accessKey, secretKey, region, bucket string) *S3Helper {
+	if S3HelperInstance != nil {
+		return S3HelperInstance
+	}
 	session := session.Must(session.NewSession(&aws.Config{
 		Region:      aws.String(region),
 		Credentials: credentials.NewStaticCredentials(accessKey, secretKey, ""),
 	}))
-	return &S3Helper{
+	S3HelperInstance = &S3Helper{
 		client: s3.New(session),
 		region: region,
 		bucket: bucket,
 	}
+	return S3HelperInstance
 }
 
 func (s *S3Helper) CreateFolder(folderName string, isPublic bool) error {
