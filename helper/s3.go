@@ -53,6 +53,14 @@ func (s *S3Helper) CreateFolder(folderName string, isPublic bool) error {
 	return err
 }
 
+func (s *S3Helper) DeleteFolder(folderName string) error {
+	_, err := s.client.DeleteObject(&s3.DeleteObjectInput{
+		Bucket: aws.String(s.bucket),
+		Key:    aws.String(folderName + "/"),
+	})
+	return err
+}
+
 func (s *S3Helper) UploadFile(folderName, fileName string, fileBytes []byte) (string, error) {
 	_, err := s.client.PutObject(&s3.PutObjectInput{
 		Bucket: aws.String(s.bucket),
