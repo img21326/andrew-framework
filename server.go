@@ -42,9 +42,12 @@ func InitDB() {
 	helper.InitDB(dbOption)
 }
 
-func InitServer() *gin.Engine {
+func InitServer() {
 	ReadConf()
 	InitDB()
+}
+
+func InitGin() *gin.Engine {
 	r := gin.Default()
 
 	r.Use(middleware.WithLoggerMiddleware())
@@ -68,7 +71,7 @@ func InitServer() *gin.Engine {
 func Start() {
 	srv := &http.Server{
 		Addr:    ":8000",
-		Handler: InitServer(),
+		Handler: InitGin(),
 	}
 
 	go func() {
