@@ -52,7 +52,7 @@ func InitServer() {
 func InitGin() *gin.Engine {
 	r := gin.Default()
 
-	r.HTMLRender = loadTemplates("./templates")
+	r.HTMLRender = loadTemplates("templates")
 
 	r.Use(middleware.WithLoggerMiddleware())
 	r.Use(middleware.WithRecoverMiddleware())
