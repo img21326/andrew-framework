@@ -105,7 +105,7 @@ func StartAWSLambda() {
 		return ginLambda.ProxyWithContext(ctx, req)
 	}
 
-	r := InitServer()
+	r := InitGin()
 	ginLambda = ginAdapter.New(r)
 	lambda.Start(handler)
 }
