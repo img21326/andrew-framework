@@ -61,12 +61,16 @@ func (s *S3Helper) DeleteFolder(folderName string) error {
 	return err
 }
 
-func (s *S3Helper) UploadFile(folderName, fileName string, fileBytes []byte) (string, error) {
-	_, err := s.client.PutObject(&s3.PutObjectInput{
+func (s *S3Helper) UploadFile(folderName, fileName string, fileBytes []byte, isPublic bool) (string, error) {
+	obj := &s3.PutObjectInput{
 		Bucket: aws.String(s.bucket),
 		Key:    aws.String(folderName + "/" + fileName),
 		Body:   bytes.NewReader(fileBytes),
-	})
+	}
+	if isPublic {
+		obj.ACL = aws.String("public-read")
+	}
+	_, err := s.client.PutObject(obj)
 	url := fmt.Sprintf("https://%s.s3-%s.amazonaws.com/%s/%s", s.bucket, s.region, folderName, fileName)
 	return url, err
 }
