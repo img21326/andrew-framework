@@ -7,12 +7,14 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"syscall"
 	"time"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	ginAdapter "github.com/awslabs/aws-lambda-go-api-proxy/gin"
+	"github.com/gin-contrib/multitemplate"
 	"github.com/gin-gonic/gin"
 	"github.com/img21326/andrew_framework/helper"
 	"github.com/img21326/andrew_framework/middleware"
@@ -49,6 +51,8 @@ func InitServer() {
 
 func InitGin() *gin.Engine {
 	r := gin.Default()
+
+	r.HTMLRender = loadTemplates("./templates")
 
 	r.Use(middleware.WithLoggerMiddleware())
 	r.Use(middleware.WithRecoverMiddleware())
@@ -108,4 +112,26 @@ func StartAWSLambda() {
 	r := InitGin()
 	ginLambda = ginAdapter.New(r)
 	lambda.Start(handler)
+}
+
+func loadTemplates(templatesDir string) multitemplate.Renderer {
+	r := multitemplate.NewRenderer()
+
+	layouts, err := filepath.Glob(templatesDir + "/layouts/*.html")
+	if err != nil {
+		panic(err.Error())
+	}
+
+	includes, err := filepath.Glob(templatesDir + "/includes/*.html")
+	if err != nil {
+		panic(err.Error())
+	}
+
+	for _, include := range includes {
+		layoutCopy := make([]string, len(layouts))
+		copy(layoutCopy, layouts)
+		files := append(layoutCopy, include)
+		r.AddFromFiles(filepath.Base(include), files...)
+	}
+	return r
 }
