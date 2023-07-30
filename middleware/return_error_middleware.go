@@ -20,6 +20,7 @@ func ReturnErrorMiddleware() gin.HandlerFunc {
 				ctx.JSON(err.HttpStatus(), gin.H{
 					"code":    err.ErrorCode(),
 					"message": err.Error(),
+					"data":    err.ErrorData(),
 				})
 				ctx.Abort()
 			} else {
