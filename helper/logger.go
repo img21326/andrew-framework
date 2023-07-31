@@ -17,18 +17,22 @@ var logger *zap.Logger
 func init() {
 
 	var w = zapcore.AddSync(&lumberjack.Logger{
-		Filename:   "./log.txt",
-		MaxSize:    500,
+		Filename:   "./logs/log.txt",
+		MaxSize:    10,
 		MaxBackups: 3,
 		MaxAge:     28,
 	})
 
 	pe := zap.NewProductionEncoderConfig()
+	pe.TimeKey = "timestamp"
+	pe.EncodeTime = zapcore.ISO8601TimeEncoder
+
 	consoleEncoder := zapcore.NewConsoleEncoder(pe)
+	jsonEncoder := zapcore.NewJSONEncoder(pe)
 
 	core := zapcore.NewTee(
 		zapcore.NewCore(
-			zapcore.NewJSONEncoder(zap.NewProductionEncoderConfig()),
+			jsonEncoder,
 			w,
 			zap.DebugLevel,
 		),
