@@ -88,7 +88,6 @@ func (l *Logger) Trace(ctx context.Context, begin time.Time, fc func() (string, 
 	l.log(ctx).Debugf("%s [%s]", sql, elapsed)
 }
 
-func (l *Logger) With(value interface{}) *Logger {
-	l.logger = l.logger.With(value)
-	return l
+func (l *Logger) With(key string, value interface{}) {
+	l.logger = l.logger.With(key, value)
 }
