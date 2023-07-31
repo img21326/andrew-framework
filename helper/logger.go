@@ -89,5 +89,5 @@ func (l *Logger) Trace(ctx context.Context, begin time.Time, fc func() (string, 
 }
 
 func (l *Logger) With(ctx context.Context, value interface{}) {
-	l.logger.With(ctx, value)
+	l.logger = l.logger.With(ctx, value)
 }
