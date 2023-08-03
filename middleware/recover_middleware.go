@@ -9,7 +9,6 @@ import (
 
 func WithRecoverMiddleware() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		ctx.Next()
 		defer func() {
 			if err := recover(); err != nil {
 				logger := ctx.MustGet("logger").(*helper.Logger)
@@ -22,5 +21,7 @@ func WithRecoverMiddleware() gin.HandlerFunc {
 				ctx.Abort()
 			}
 		}()
+
+		ctx.Next()
 	}
 }
