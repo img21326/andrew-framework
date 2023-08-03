@@ -16,5 +16,7 @@ func WithLoggerMiddleware() gin.HandlerFunc {
 		ctx.Set("uuid", uuid)
 
 		ctx.Next()
+
+		defer logger.Close()
 	}
 }

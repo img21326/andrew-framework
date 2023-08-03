@@ -91,3 +91,7 @@ func (l *Logger) Trace(ctx context.Context, begin time.Time, fc func() (string, 
 func (l *Logger) With(key string, value interface{}) {
 	l.logger = l.logger.With(key, value)
 }
+
+func (l *Logger) Close() {
+	l.logger.Sync()
+}
