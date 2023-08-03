@@ -26,9 +26,14 @@ func ReadConf() {
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath(".")
 
+	viper.AutomaticEnv()
+
 	if err := viper.ReadInConfig(); err != nil {
-		fmt.Printf("Error reading config file: %s", err)
-		return
+		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
+			fmt.Println("No config file found, reading from the environment")
+		} else {
+			log.Fatalf("Fatal error reading config file: %s", err)
+		}
 	}
 }
 
