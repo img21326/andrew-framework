@@ -12,7 +12,7 @@ type JWTHelper struct {
 }
 
 func newJwtHelper() *JWTHelper {
-	serverKey := viper.GetViper().GetString("server.key")
+	serverKey := viper.GetViper().GetString("SERVER_KEY")
 	return &JWTHelper{
 		serverKey: serverKey,
 	}

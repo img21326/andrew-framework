@@ -13,7 +13,7 @@ type SessionHelper struct {
 }
 
 func newSessionHelper() *SessionHelper {
-	serverKey := viper.GetViper().GetString("server.key")
+	serverKey := viper.GetViper().GetString("SERVER_KEY")
 	return &SessionHelper{
 		session: sessions.NewCookieStore([]byte(serverKey)),
 	}
