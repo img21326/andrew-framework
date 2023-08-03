@@ -39,11 +39,11 @@ func ReadConf() {
 
 func InitDB() {
 	dbOption := helper.DBOption{
-		Host:     viper.GetString("db.host"),
-		Port:     viper.GetString("db.port"),
-		User:     viper.GetString("db.user"),
-		Password: viper.GetString("db.password"),
-		DBName:   viper.GetString("db.dbname"),
+		Host:     viper.GetString("DB_HOST"),
+		Port:     viper.GetString("DB_PORT"),
+		User:     viper.GetString("DB_USER"),
+		Password: viper.GetString("DB_PASSWORD"),
+		DBName:   viper.GetString("DB_NAME"),
 	}
 	fmt.Printf("%+v\n", viper.AllSettings())
 	helper.InitDB(dbOption)
