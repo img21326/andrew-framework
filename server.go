@@ -31,7 +31,7 @@ func ReadConf() {
 		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
 			fmt.Println("No config file found, reading from the environment")
 		} else {
-			log.Fatalf("Fatal error reading config file: %s", err)
+			fmt.Printf("Fatal error reading config file: %s", err)
 		}
 	}
 }
