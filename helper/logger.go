@@ -30,14 +30,15 @@ func init() {
 	consoleEncoder := zapcore.NewConsoleEncoder(pe)
 	jsonEncoder := zapcore.NewJSONEncoder(pe)
 
-	core := zapcore.NewTee(
-		zapcore.NewCore(
-			jsonEncoder,
-			w,
-			zap.DebugLevel,
-		),
-		zapcore.NewCore(consoleEncoder, zapcore.AddSync(os.Stdout), zap.DebugLevel),
-	)
+	fileLogger := zapcore.NewCore(jsonEncoder, w, zap.DebugLevel)
+	consoleLogger := zapcore.NewCore(consoleEncoder, zapcore.AddSync(os.Stdout), zap.DebugLevel)
+
+	logger := []zapcore.Core{consoleLogger}
+	if os.Getenv("AWS_LAMBDA_FUNCTION_NAME") == "" {
+		logger = append(logger, fileLogger)
+	}
+
+	core := zapcore.NewTee(logger...)
 
 	logger = zap.New(core)
 }
