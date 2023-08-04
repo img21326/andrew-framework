@@ -25,6 +25,8 @@ func ReadConf() {
 	viper.SetConfigFile(".env")
 	viper.AddConfigPath(".")
 
+	viper.AutomaticEnv()
+
 	if err := viper.ReadInConfig(); err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
 			fmt.Println("No config file found, reading from the environment")
