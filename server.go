@@ -22,8 +22,7 @@ import (
 )
 
 func ReadConf() {
-	viper.SetConfigName("env")
-	viper.SetConfigType("yaml")
+	viper.SetConfigFile(".env")
 	viper.AddConfigPath(".")
 
 	viper.AutomaticEnv()
