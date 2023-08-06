@@ -18,7 +18,7 @@ func WithRequestLogMiddleware() gin.HandlerFunc {
 
 		contentType := ctx.GetHeader("Content-Type")
 		// 確認不是上傳檔案的資料
-		if strings.Contains(contentType, "multipart/form-data") {
+		if !strings.Contains(contentType, "multipart/form-data") {
 			body, err := io.ReadAll(ctx.Request.Body)
 			if err != nil {
 				logger.Error(ctx, "get raw data error: %v", err)
