@@ -3,6 +3,7 @@ package middleware
 import (
 	"bytes"
 	"io"
+	"strings"
 	"time"
 
 	"github.com/img21326/andrew_framework/helper"
@@ -17,7 +18,7 @@ func WithRequestLogMiddleware() gin.HandlerFunc {
 
 		contentType := ctx.GetHeader("Content-Type")
 		// 確認不是上傳檔案的資料
-		if contentType != "multipart/form-data" && contentType != "application/octet-stream" {
+		if strings.Contains(contentType, "multipart/form-data") {
 			body, err := io.ReadAll(ctx.Request.Body)
 			if err != nil {
 				logger.Error(ctx, "get raw data error: %v", err)
