@@ -15,12 +15,16 @@ func WithRequestLogMiddleware() gin.HandlerFunc {
 		logger := ctx.MustGet("logger").(*helper.Logger)
 		startTime := time.Now()
 
-		body, err := io.ReadAll(ctx.Request.Body)
-		if err != nil {
-			logger.Error(ctx, "get raw data error: %v", err)
+		contentType := ctx.GetHeader("Content-Type")
+		// 確認不是上傳檔案的資料
+		if contentType != "multipart/form-data" && contentType != "application/octet-stream" {
+			body, err := io.ReadAll(ctx.Request.Body)
+			if err != nil {
+				logger.Error(ctx, "get raw data error: %v", err)
+			}
+			logger.Info(ctx, "request params: %+v, request data: %+v", ctx.Request.URL.Query(), string(body))
+			ctx.Request.Body = io.NopCloser(bytes.NewBuffer(body))
 		}
-		logger.Info(ctx, "request params: %+v, request data: %+v", ctx.Request.URL.Query(), string(body))
-		ctx.Request.Body = io.NopCloser(bytes.NewBuffer(body))
 
 		ctx.Next()
 
