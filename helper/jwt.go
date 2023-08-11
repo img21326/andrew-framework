@@ -1,6 +1,8 @@
 package helper
 
 import (
+	"time"
+
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/spf13/viper"
 )
@@ -28,6 +30,7 @@ func GetJWTHelper() *JWTHelper {
 func (s *JWTHelper) CreateToken(userModel interface{}) string {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"user": userModel,
+		"exp":  time.Now().Add(time.Hour * 24 * 5).Unix(),
 	})
 	tokenString, _ := token.SignedString([]byte(s.serverKey))
 	return tokenString
@@ -43,6 +46,10 @@ func (s *JWTHelper) VerifyToken(token string) (interface{}, error) {
 	claims, ok := verifyToken.Claims.(jwt.MapClaims)
 	if !ok {
 		return nil, jwt.ErrTokenInvalidClaims
+	}
+	expireTime := claims["exp"].(float64)
+	if time.Now().Unix() > int64(expireTime) {
+		return nil, jwt.ErrTokenExpired
 	}
 	return claims["user"], nil
 }
