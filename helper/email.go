@@ -11,18 +11,18 @@ var emailInstance *EmailHelper
 
 type EmailHelper struct {
 	host string
-	port int
+	port string
 	user string
 	pass string
 }
 
 func newEmailHelper() *EmailHelper {
 	host := viper.GetViper().GetString("EMAIL_HOST")
-	port := viper.GetViper().GetInt("EMAIL_PORT")
+	port := viper.GetViper().GetString("EMAIL_PORT")
 	user := viper.GetViper().GetString("EMAIL_USER")
 	pass := viper.GetViper().GetString("EMAIL_PASS")
 
-	if host == "" || port == 0 || user == "" || pass == "" {
+	if host == "" || port == "" || user == "" || pass == "" {
 		panic("Email config error")
 	}
 
