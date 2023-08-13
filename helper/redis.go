@@ -28,7 +28,7 @@ func GetRedisInstance() *redis.Client {
 }
 
 func RunRedis(f func(*redis.Conn) error) error {
-	conn := RedisInstance.Conn()
+	conn := GetRedisInstance().Conn()
 	defer conn.Close()
 	err := f(conn)
 	return err
