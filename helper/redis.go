@@ -15,11 +15,12 @@ func GetRedisInstance() *redis.Client {
 		if redisURL == "" {
 			panic("Redis config error")
 		}
-		RedisInstance = redis.NewClient(&redis.Options{
-			Addr:        redisURL,
-			PoolSize:    20,
-			PoolTimeout: 15,
-		})
+		opt, error := redis.ParseURL(redisURL)
+		if error != nil {
+			panic(error)
+		}
+		opt.PoolSize = 20
+		opt.PoolTimeout = 15
 		ctx := context.Background()
 		if _, err := RedisInstance.Ping(ctx).Result(); err != nil {
 			panic(err)
