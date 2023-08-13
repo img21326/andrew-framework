@@ -8,15 +8,17 @@ import (
 
 var RedisInstance *redis.Client
 
-func init() {
-	RedisInstance = redis.NewClient(&redis.Options{
-		Addr:        os.Getenv("REDIS_URL"),
-		PoolSize:    20,
-		PoolTimeout: 15,
-	})
-}
-
 func GetRedisInstance() *redis.Client {
+	if RedisInstance == nil {
+		if os.Getenv("REDIS_URL") == "" {
+			panic("Redis config error")
+		}
+		RedisInstance = redis.NewClient(&redis.Options{
+			Addr:        os.Getenv("REDIS_URL"),
+			PoolSize:    20,
+			PoolTimeout: 15,
+		})
+	}
 	return RedisInstance
 }
 
