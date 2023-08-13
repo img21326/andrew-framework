@@ -2,20 +2,21 @@ package helper
 
 import (
 	"context"
-	"os"
 
 	"github.com/redis/go-redis/v9"
+	"github.com/spf13/viper"
 )
 
 var RedisInstance *redis.Client
 
 func GetRedisInstance() *redis.Client {
 	if RedisInstance == nil {
-		if os.Getenv("REDIS_URL") == "" {
+		redisURL := viper.GetString("REDIS_URL")
+		if redisURL == "" {
 			panic("Redis config error")
 		}
 		RedisInstance = redis.NewClient(&redis.Options{
-			Addr:        os.Getenv("REDIS_URL"),
+			Addr:        redisURL,
 			PoolSize:    20,
 			PoolTimeout: 15,
 		})
