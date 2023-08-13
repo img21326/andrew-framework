@@ -1,6 +1,7 @@
 package helper
 
 import (
+	"context"
 	"os"
 
 	"github.com/redis/go-redis/v9"
@@ -18,6 +19,10 @@ func GetRedisInstance() *redis.Client {
 			PoolSize:    20,
 			PoolTimeout: 15,
 		})
+		ctx := context.Background()
+		if _, err := RedisInstance.Ping(ctx).Result(); err != nil {
+			panic(err)
+		}
 	}
 	return RedisInstance
 }
