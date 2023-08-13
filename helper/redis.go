@@ -21,10 +21,12 @@ func GetRedisInstance() *redis.Client {
 		}
 		opt.PoolSize = 20
 		opt.PoolTimeout = 15
+		r := redis.NewClient(opt)
 		ctx := context.Background()
-		if _, err := RedisInstance.Ping(ctx).Result(); err != nil {
+		if _, err := r.Ping(ctx).Result(); err != nil {
 			panic(err)
 		}
+		RedisInstance = r
 	}
 	return RedisInstance
 }
