@@ -3,6 +3,7 @@ package helper
 import (
 	"context"
 	"os"
+	"runtime"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -64,7 +65,11 @@ func NewLogger(uuid string) *Logger {
 }
 
 func (l *Logger) log(_ context.Context) *zap.SugaredLogger {
-	return l.logger.With(zap.String("requestID", l.uuid))
+	_, file, line, _ := runtime.Caller(2)
+
+	return l.logger.With(zap.String("requestID", l.uuid)).
+		With(zap.String("file", file)).
+		With(zap.Int("line", line))
 }
 
 func (l *Logger) LogMode(gormLogger.LogLevel) gormLogger.Interface {
