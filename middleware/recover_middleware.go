@@ -12,7 +12,8 @@ func WithRecoverMiddleware() gin.HandlerFunc {
 		defer func() {
 			if err := recover(); err != nil {
 				logger := ctx.MustGet("logger").(*helper.Logger)
-				logger.Error(ctx, "error: %v", string(debug.Stack()))
+				logger.Error(ctx, "error: %v", err)
+				logger.Error(ctx, "stack: %s", debug.Stack())
 
 				ctx.JSON(500, gin.H{
 					"code":    500,
