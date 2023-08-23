@@ -1,6 +1,8 @@
 package middleware
 
 import (
+	"fmt"
+
 	"github.com/img21326/andrew_framework/helper"
 
 	"github.com/gin-gonic/gin"
@@ -23,7 +25,7 @@ func ReturnErrorMiddleware() gin.HandlerFunc {
 				})
 				ctx.Abort()
 			} else {
-				panic("undefined error")
+				panic(fmt.Sprintf("undefined error with: %v", ctx.Errors.Last().Error()))
 			}
 		}
 	}
