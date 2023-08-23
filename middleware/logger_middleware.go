@@ -9,11 +9,15 @@ import (
 
 func WithLoggerMiddleware() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		uuid := uuid.New().String()
-		logger := helper.NewLogger(uuid)
+		var uid string
+		uid, ok := ctx.Value("aws_request_id").(string)
+		if !ok {
+			uid = uuid.New().String()
+		}
+		logger := helper.NewLogger(uid)
 
 		ctx.Set("logger", logger)
-		ctx.Set("uuid", uuid)
+		ctx.Set("uuid", uid)
 
 		ctx.Next()
 
