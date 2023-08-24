@@ -23,7 +23,7 @@ func newEmailHelper() *EmailHelper {
 	pass := viper.GetViper().GetString("EMAIL_PASS")
 
 	if host == "" || port == "" || user == "" || pass == "" {
-		panic("Email config error")
+		return nil
 	}
 
 	return &EmailHelper{
