@@ -12,7 +12,7 @@ import (
 )
 
 type GormOption struct {
-	Logger *Logger
+	Ctx *gin.Context
 }
 
 var DB *sql.DB
@@ -47,15 +47,14 @@ func InitDB(option DBOption) {
 
 func NewGorm(option GormOption) *gorm.DB {
 	config := &gorm.Config{}
-	if option.Logger != nil {
-		config.Logger = option.Logger
-	}
+	logger := GetLogger(option.Ctx)
+	config.Logger = logger
 	gorm, err := gorm.Open(postgres.New(postgres.Config{Conn: DB}), config)
 	if err != nil {
 		panic(err)
 	}
 	for _, f := range gormHook {
-		f(gorm)
+		f(gorm, option.Ctx)
 	}
 	return gorm
 }

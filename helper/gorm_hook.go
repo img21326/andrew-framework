@@ -1,9 +1,12 @@
 package helper
 
-import "gorm.io/gorm"
+import (
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+)
 
-var gormHook []func(*gorm.DB)
+var gormHook []func(*gorm.DB, *gin.Context)
 
-func RegisterGormHook(f func(*gorm.DB)) {
+func RegisterGormHook(f func(*gorm.DB, *gin.Context)) {
 	gormHook = append(gormHook, f)
 }

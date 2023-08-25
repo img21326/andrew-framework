@@ -8,9 +8,9 @@ import (
 
 func WithGormMiddleware() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		logger := ctx.MustGet("logger").(*helper.Logger)
+		_ = ctx.MustGet("logger").(*helper.Logger)
 		gorm := helper.NewGorm(helper.GormOption{
-			Logger: logger,
+			Ctx: ctx,
 		})
 		ctx.Set("gormDB", gorm)
 		ctx.Next()
