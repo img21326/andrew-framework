@@ -54,6 +54,9 @@ func NewGorm(option GormOption) *gorm.DB {
 	if err != nil {
 		panic(err)
 	}
+	for _, f := range gormHook {
+		f(gorm)
+	}
 	return gorm
 }
 
