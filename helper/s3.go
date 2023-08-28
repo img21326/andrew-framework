@@ -8,6 +8,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
+	"github.com/spf13/viper"
 )
 
 type S3Helper struct {
@@ -16,29 +17,31 @@ type S3Helper struct {
 	region string
 }
 
-var S3HelperInstance *S3Helper
+var s3HelperInstance *S3Helper
 
-func NewS3Helper(accessKey, secretKey, region, bucket string) *S3Helper {
-	if S3HelperInstance != nil {
-		return S3HelperInstance
-	}
+func newS3Helper(accessKey, secretKey, region, bucket string) *S3Helper {
 	session := session.Must(session.NewSession(&aws.Config{
 		Region:      aws.String(region),
 		Credentials: credentials.NewStaticCredentials(accessKey, secretKey, ""),
 	}))
-	S3HelperInstance = &S3Helper{
+	return &S3Helper{
 		client: s3.New(session),
 		region: region,
 		bucket: bucket,
 	}
-	return S3HelperInstance
 }
 
 func GetS3Instance() *S3Helper {
-	if S3HelperInstance == nil {
-		panic("S3Helper not init")
+	if s3HelperInstance == nil {
+		v := viper.GetViper()
+		s3HelperInstance = newS3Helper(
+			v.GetString("S3_ACCESS_KEY"),
+			v.GetString("S3_SECRET_KEY"),
+			v.GetString("S3_REGION"),
+			v.GetString("S3_BUCKET"),
+		)
 	}
-	return S3HelperInstance
+	return s3HelperInstance
 }
 
 func (s *S3Helper) CreateFolder(folderName string, isPublic bool) error {
