@@ -88,17 +88,17 @@ func Start() {
 		}
 	}()
 
-	quit := make(chan os.Signal)
-	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
-	<-quit
-	log.Println("Shutdown Server ...")
-
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 
 	workerCount := viper.GetInt("WORKER_COUNT")
 	for i := 0; i < workerCount; i++ {
 		go helper.StartWorker(ctx)
 	}
+
+	quit := make(chan os.Signal)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+	log.Println("Shutdown Server ...")
 
 	defer cancel()
 	defer helper.WaitForLoggerComplete()
