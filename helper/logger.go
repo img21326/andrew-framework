@@ -49,7 +49,10 @@ func WaitForLoggerComplete() {
 }
 
 func GetLogger(ctx *gin.Context) *Logger {
-	return ctx.MustGet("logger").(*Logger)
+	if ctx == nil {
+		return nil
+	}
+	return ctx.Value("logger").(*Logger)
 }
 
 type Logger struct {

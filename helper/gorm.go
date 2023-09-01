@@ -48,7 +48,9 @@ func InitDB(option DBOption) {
 func NewGorm(option GormOption) *gorm.DB {
 	config := &gorm.Config{}
 	logger := GetLogger(option.Ctx)
-	config.Logger = logger
+	if logger != nil {
+		config.Logger = logger
+	}
 	gorm, err := gorm.Open(postgres.New(postgres.Config{Conn: DB}), config)
 	if err != nil {
 		panic(err)
