@@ -44,7 +44,6 @@ func InitDB() {
 		Password: viper.GetString("DB_PASSWORD"),
 		DBName:   viper.GetString("DB_NAME"),
 	}
-	fmt.Printf("%+v\n", viper.AllSettings())
 	helper.InitDB(dbOption)
 }
 
