@@ -11,7 +11,7 @@ var RedisInstance *redis.Client
 
 func GetRedisInstance() *redis.Client {
 	if RedisInstance == nil {
-		redisURL := viper.GetString("REDIS_URL")
+		redisURL := viper.GetViper().GetString("REDIS_URL")
 		if redisURL == "" {
 			panic("Redis config error")
 		}
