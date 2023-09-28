@@ -2,11 +2,14 @@ package helper
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"time"
 
 	"github.com/redis/go-redis/v9"
 )
+
+var queueLogger = NewLogger("queue")
 
 type Queue struct{}
 
@@ -19,9 +22,10 @@ func GetQueueInstance() *Queue {
 type Job struct {
 	RetryCount  int         `json:"retry_count"`
 	MaxRetry    int         `json:"max_retry"`
-	LastRunTime int64       `json:"last_run_time"`
+	LastRunTime *time.Time  `json:"last_run_time"`
 	JobType     string      `json:"job_type"`
-	JobData     interface{} `json:"job_data"`
+	JobDataRaw  []byte      `json:"job_data_raw"`
+	JobData     interface{} `json:"-"`
 }
 
 var jobWorkMap = map[string]func(job Job) error{}
@@ -41,7 +45,9 @@ func (q *Queue) PushJob(ctx context.Context, job Job) error {
 	if !find {
 		return fmt.Errorf("job type %s not found", job.JobType)
 	}
-	return GetRedisInstance().LPush(ctx, "job_queue", job).Err()
+	job.JobDataRaw, _ = json.Marshal(job.JobData)
+	raw, _ := json.Marshal(job)
+	return GetRedisInstance().LPush(ctx, "job_queue", raw).Err()
 }
 
 func (q *Queue) Work(ctx context.Context) error {
@@ -56,16 +62,22 @@ func (q *Queue) Work(ctx context.Context) error {
 	}
 	err = jobWorkMap[job.JobType](job)
 	if err != nil {
+		now := time.Now()
+		job.LastRunTime = &now
+		if job.MaxRetry == 0 {
+			job.MaxRetry = 5
+		}
 		job.RetryCount++
 		if job.RetryCount < job.MaxRetry {
 			return q.PushJob(ctx, job)
+		} else {
+			queueLogger.Error(ctx, "job: %+v, err: %s", job, err.Error())
 		}
 	}
 	return nil
 }
 
 func StartWorker(ctx context.Context) {
-	logger := NewLogger("queue")
 	for {
 		select {
 		case <-ctx.Done():
@@ -73,7 +85,7 @@ func StartWorker(ctx context.Context) {
 		default:
 			err := GetQueueInstance().Work(ctx)
 			if err != nil {
-				logger.Error(ctx, "work error: %s", err.Error())
+				queueLogger.Error(ctx, "work error: %s", err.Error())
 			}
 		}
 	}
