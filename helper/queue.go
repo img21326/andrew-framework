@@ -9,13 +9,16 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-var queueLogger = NewLogger("queue")
+var queueLogger *Logger
 
 type Queue struct{}
 
 var queue *Queue = &Queue{}
 
 func GetQueueInstance() *Queue {
+	if queueLogger == nil {
+		queueLogger = NewLogger("queue")
+	}
 	return queue
 }
 
