@@ -1,28 +1,26 @@
 package helper
 
 import (
-	"fmt"
-	"net/smtp"
-
 	"github.com/spf13/viper"
+	gomail "gopkg.in/gomail.v2"
 )
 
 var emailInstance *EmailHelper
 
 type EmailHelper struct {
 	host string
-	port string
+	port int
 	user string
 	pass string
 }
 
 func newEmailHelper() *EmailHelper {
 	host := viper.GetViper().GetString("EMAIL_HOST")
-	port := viper.GetViper().GetString("EMAIL_PORT")
+	port := viper.GetViper().GetInt("EMAIL_PORT")
 	user := viper.GetViper().GetString("EMAIL_USER")
 	pass := viper.GetViper().GetString("EMAIL_PASS")
 
-	if host == "" || port == "" || user == "" || pass == "" {
+	if host == "" || port == 0 || user == "" || pass == "" {
 		return nil
 	}
 
@@ -54,10 +52,18 @@ func (e *EmailHelper) SendEmail(option EmailSendOption) error {
 		from = e.user
 	}
 
-	message := []byte(option.Subject + option.Body)
+	msg := gomail.NewMessage()
+	msg.SetHeader("From", from)
+	msg.SetHeader("To", option.To...)
+	msg.SetHeader("Subject", option.Subject)
+	// text/html for a html email
+	msg.SetBody("text/plain", option.Body)
 
-	auth := smtp.PlainAuth("", e.user, e.pass, e.host)
+	n := gomail.NewDialer(e.host, e.port, from, "<your-key>")
 
-	err := smtp.SendMail(fmt.Sprintf("%s:%s", e.host, e.port), auth, from, option.To, message)
-	return err
+	// Send the email
+	if err := n.DialAndSend(msg); err != nil {
+		return err
+	}
+	return nil
 }
