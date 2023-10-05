@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"runtime/debug"
 	"time"
 
 	"github.com/google/uuid"
@@ -66,6 +67,12 @@ func (q *Queue) PushJob(ctx context.Context, job Job) error {
 }
 
 func (q *Queue) Work(ctx context.Context) error {
+	defer func() {
+		if err := recover(); err != nil {
+			queueLogger.Error(ctx, "panic: %v", err)
+			queueLogger.Error(ctx, "stack: %s", string(debug.Stack()))
+		}
+	}()
 	var jobString string
 	err := GetRedisInstance().LPop(ctx, "job_queue").Scan(&jobString)
 	if err != nil {
