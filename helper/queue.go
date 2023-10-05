@@ -106,11 +106,11 @@ func (q *Queue) Work(ctx context.Context) error {
 	return nil
 }
 
-func StartWorker(ctx context.Context) {
+func StartWorker(ctx context.Context, done chan struct{}) {
 	for {
 		select {
 		case <-ctx.Done():
-			return
+			done <- struct{}{}
 		default:
 			err := GetQueueInstance().Work(ctx)
 			if err != nil {

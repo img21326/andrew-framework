@@ -9,6 +9,7 @@ import (
 	"os/signal"
 	"path/filepath"
 	"syscall"
+	"time"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
@@ -86,16 +87,20 @@ func Start() {
 		}
 	}()
 
-	ctx, cancel := context.WithCancel(context.Background())
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 
+	workerContext, workerCancel := context.WithCancel(context.Background())
 	workerCount := viper.GetInt("WORKER_COUNT")
+	workerDoneChans := make([]chan struct{}, workerCount)
 	for i := 0; i < workerCount; i++ {
-		go helper.StartWorker(ctx)
+		workerDoneChans[i] = make(chan struct{})
+		go helper.StartWorker(workerContext, workerDoneChans[i])
 	}
 
 	quit := make(chan os.Signal)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
+	workerCancel()
 	log.Println("Shutdown Server ...")
 
 	defer cancel()
@@ -106,6 +111,9 @@ func Start() {
 	select {
 	case <-ctx.Done():
 		log.Println("timeout of 5 seconds.")
+	}
+	for i := 0; i < workerCount; i++ {
+		<-workerDoneChans[i]
 	}
 	log.Println("Server exiting")
 }
