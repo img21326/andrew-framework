@@ -9,7 +9,6 @@ import (
 	"os/signal"
 	"path/filepath"
 	"syscall"
-	"time"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
@@ -87,7 +86,7 @@ func Start() {
 		}
 	}()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithCancel(context.Background())
 
 	workerCount := viper.GetInt("WORKER_COUNT")
 	for i := 0; i < workerCount; i++ {
