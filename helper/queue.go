@@ -27,7 +27,7 @@ type Job struct {
 	MaxRetry    int         `json:"max_retry"`
 	LastRunTime *time.Time  `json:"last_run_time"`
 	JobType     string      `json:"job_type"`
-	JobDataRaw  []byte      `json:"job_data_raw"`
+	JobDataRaw  string      `json:"job_data_raw"`
 	JobData     interface{} `json:"-"`
 }
 
@@ -48,19 +48,25 @@ func (q *Queue) PushJob(ctx context.Context, job Job) error {
 	if !find {
 		return fmt.Errorf("job type %s not found", job.JobType)
 	}
-	job.JobDataRaw, _ = json.Marshal(job.JobData)
+	data, _ := json.Marshal(job.JobData)
+	job.JobDataRaw = string(data)
 	raw, _ := json.Marshal(job)
 	return GetRedisInstance().LPush(ctx, "job_queue", raw).Err()
 }
 
 func (q *Queue) Work(ctx context.Context) error {
-	var job Job
-	err := GetRedisInstance().LPop(ctx, "job_queue").Scan(&job)
+	var jobString string
+	err := GetRedisInstance().LPop(ctx, "job_queue").Scan(&jobString)
 	if err != nil {
 		if err == redis.Nil {
 			time.Sleep(5 * time.Second)
 			return nil
 		}
+		return err
+	}
+	var job Job
+	err = json.Unmarshal([]byte(jobString), &job)
+	if err != nil {
 		return err
 	}
 	err = jobWorkMap[job.JobType](job)
