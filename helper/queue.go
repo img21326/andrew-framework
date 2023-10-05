@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -23,6 +24,7 @@ func GetQueueInstance() *Queue {
 }
 
 type Job struct {
+	JobID       string      `json:"job_id"`
 	RetryCount  int         `json:"retry_count"`
 	MaxRetry    int         `json:"max_retry"`
 	LastRunTime *time.Time  `json:"last_run_time"`
@@ -32,7 +34,9 @@ type Job struct {
 }
 
 func NewJob(jobType string, jobData interface{}) Job {
+	id := uuid.NewString()
 	return Job{
+		JobID:   id,
 		JobType: jobType,
 		JobData: jobData,
 	}
@@ -53,7 +57,7 @@ func (q *Queue) PushJob(ctx context.Context, job Job) error {
 		}
 	}
 	if !find {
-		return fmt.Errorf("job type %s not found", job.JobType)
+		panic(fmt.Sprintf("job type %s not found", job.JobType))
 	}
 	data, _ := json.Marshal(job.JobData)
 	job.JobDataRaw = string(data)
@@ -76,6 +80,7 @@ func (q *Queue) Work(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
+	queueLogger.Info(ctx, "strating job id: %s", job.JobID)
 	err = jobWorkMap[job.JobType](job)
 	if err != nil {
 		now := time.Now()
@@ -90,6 +95,7 @@ func (q *Queue) Work(ctx context.Context) error {
 			queueLogger.Error(ctx, "job: %+v, err: %s", job, err.Error())
 		}
 	}
+	queueLogger.Info(ctx, "job id: %s done", job.JobID)
 	return nil
 }
 
