@@ -59,7 +59,7 @@ func (e *EmailHelper) SendEmail(option EmailSendOption) error {
 	// text/html for a html email
 	msg.SetBody("text/plain", option.Body)
 
-	n := gomail.NewDialer(e.host, e.port, from, "<your-key>")
+	n := gomail.NewDialer(e.host, e.port, from, e.pass)
 
 	// Send the email
 	if err := n.DialAndSend(msg); err != nil {

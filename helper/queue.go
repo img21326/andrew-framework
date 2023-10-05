@@ -31,6 +31,13 @@ type Job struct {
 	JobData     interface{} `json:"-"`
 }
 
+func NewJob(jobType string, jobData interface{}) Job {
+	return Job{
+		JobType: jobType,
+		JobData: jobData,
+	}
+}
+
 var jobWorkMap = map[string]func(job Job) error{}
 
 func (q *Queue) RegisterJobWork(jobType string, work func(job Job) error) {
