@@ -43,6 +43,7 @@ type EmailSendOption struct {
 	From    string
 	To      []string
 	Subject string
+	IsHtml  bool
 	Body    string
 }
 
@@ -57,7 +58,11 @@ func (e *EmailHelper) SendEmail(option EmailSendOption) error {
 	msg.SetHeader("To", option.To...)
 	msg.SetHeader("Subject", option.Subject)
 	// text/html for a html email
-	msg.SetBody("text/plain", option.Body)
+	if option.IsHtml {
+		msg.SetBody("text/html", option.Body)
+	} else {
+		msg.SetBody("text/plain", option.Body)
+	}
 
 	n := gomail.NewDialer(e.host, e.port, from, e.pass)
 
