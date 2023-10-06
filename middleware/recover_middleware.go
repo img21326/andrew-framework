@@ -29,7 +29,8 @@ func WithRecoverMiddleware() gin.HandlerFunc {
 					if len(adminEmail) == 0 {
 						return
 					}
-					body := fmt.Sprintf("request: %s %s\ndata: %+v\nerror: %v\nstack: %s", ctx.Request.Method, ctx.Request.URL.String(), ctx.Request.Body, err, debug.Stack())
+					requestRawBody := ctx.Value("raw_body").(*[]byte)
+					body := fmt.Sprintf("request: %s %s\ndata: %+v\nerror: %v\nstack: %s", ctx.Request.Method, ctx.Request.URL.String(), string(*requestRawBody), err, debug.Stack())
 					mailHelper.SendEmail(helper.EmailSendOption{
 						To:      adminEmail,
 						Subject: "Internal Server Error",

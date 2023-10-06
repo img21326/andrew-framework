@@ -24,6 +24,7 @@ func WithRequestLogMiddleware() gin.HandlerFunc {
 				logger.Error(ctx, "get raw data error: %v", err)
 			}
 			logger.Info(ctx, "request params: %+v, request data: %+v", ctx.Request.URL.Query(), string(body))
+			ctx.Set("raw_body", &body)
 			ctx.Request.Body = io.NopCloser(bytes.NewBuffer(body))
 		}
 
