@@ -10,8 +10,10 @@ func NewSet[T comparable]() *Set[T] {
 	}
 }
 
-func (s *Set[T]) Add(item T) {
-	s.Items[item] = true
+func (s *Set[T]) Add(item ...T) {
+	for _, v := range item {
+		s.Items[v] = true
+	}
 }
 
 func (s *Set[T]) Remove(item T) {
