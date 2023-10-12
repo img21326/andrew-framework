@@ -23,7 +23,7 @@ func WithRecoverMiddleware() gin.HandlerFunc {
 				})
 				ctx.Abort()
 
-				if mailHelper := helper.GetEmailHelper(); mailHelper != nil {
+				if mailHelper := helper.GetEmailHelper(); mailHelper != nil && gin.Mode() == gin.ReleaseMode {
 					viper := viper.GetViper()
 					adminEmail := viper.GetStringSlice("ADMIN_EMAIL")
 					if len(adminEmail) == 0 {
