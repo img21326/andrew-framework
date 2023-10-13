@@ -1,4 +1,4 @@
-package andrewframework
+package framework
 
 import (
 	"context"
@@ -16,8 +16,8 @@ import (
 	ginAdapter "github.com/awslabs/aws-lambda-go-api-proxy/gin"
 	"github.com/gin-contrib/multitemplate"
 	"github.com/gin-gonic/gin"
-	"github.com/img21326/andrew_framework/helper"
-	"github.com/img21326/andrew_framework/middleware"
+	"github.com/img21326/andrew-framework/helper"
+	"github.com/img21326/andrew-framework/middleware"
 	"github.com/spf13/viper"
 )
 

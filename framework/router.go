@@ -1,4 +1,4 @@
-package andrewframework
+package framework
 
 import "github.com/gin-gonic/gin"
 

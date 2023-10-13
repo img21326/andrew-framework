@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"github.com/img21326/andrew_framework/helper"
+	"github.com/img21326/andrew-framework/helper"
 
 	"github.com/gin-gonic/gin"
 )

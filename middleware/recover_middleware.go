@@ -5,7 +5,7 @@ import (
 	"runtime/debug"
 
 	"github.com/gin-gonic/gin"
-	"github.com/img21326/andrew_framework/helper"
+	"github.com/img21326/andrew-framework/helper"
 	"github.com/spf13/viper"
 )
 
