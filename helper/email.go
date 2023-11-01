@@ -39,6 +39,15 @@ func GetEmailHelper() *EmailHelper {
 	return emailInstance
 }
 
+func NewEmailInstance(host string, port int, user string, pass string) *EmailHelper {
+	return &EmailHelper{
+		host: host,
+		port: port,
+		user: user,
+		pass: pass,
+	}
+}
+
 type EmailSendOption struct {
 	From    string
 	To      []string
