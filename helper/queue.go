@@ -62,7 +62,7 @@ func (q *Queue) PushJob(ctx context.Context, job Job) error {
 	if !find {
 		panic(fmt.Sprintf("job type %s not found", job.JobType))
 	}
-	if job.JobDataRaw != "" {
+	if job.JobDataRaw == "" {
 		data, _ := json.Marshal(job.JobData)
 		job.JobDataRaw = string(data)
 	}
@@ -100,6 +100,8 @@ func (q *Queue) Work(ctx context.Context) error {
 			job.MaxRetry = 5
 		}
 		job.RetryCount++
+		time.Sleep(5 * time.Second)
+
 		if job.RetryCount < job.MaxRetry {
 			return q.PushJob(ctx, job)
 		} else {
