@@ -7,8 +7,10 @@ import (
 	"runtime/debug"
 	"time"
 
+	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/redis/go-redis/v9"
+	"github.com/spf13/viper"
 )
 
 var queueLogger *Logger
@@ -60,8 +62,10 @@ func (q *Queue) PushJob(ctx context.Context, job Job) error {
 	if !find {
 		panic(fmt.Sprintf("job type %s not found", job.JobType))
 	}
-	data, _ := json.Marshal(job.JobData)
-	job.JobDataRaw = string(data)
+	if job.JobDataRaw != "" {
+		data, _ := json.Marshal(job.JobData)
+		job.JobDataRaw = string(data)
+	}
 	raw, _ := json.Marshal(job)
 	return GetRedisInstance().LPush(ctx, "job_queue", raw).Err()
 }
@@ -100,6 +104,19 @@ func (q *Queue) Work(ctx context.Context) error {
 			return q.PushJob(ctx, job)
 		} else {
 			queueLogger.Error(ctx, "job: %+v, err: %s", job, err.Error())
+			if mailHelper := GetEmailHelper(); mailHelper != nil && gin.Mode() == gin.ReleaseMode {
+				viper := viper.GetViper()
+				adminEmail := viper.GetStringSlice("ADMIN_EMAIL")
+				if len(adminEmail) == 0 {
+					return nil
+				}
+				body := fmt.Sprintf("job: %+v, err: %s", job, err.Error())
+				mailHelper.SendEmail(EmailSendOption{
+					To:      adminEmail,
+					Subject: "Job Error",
+					Body:    body,
+				})
+			}
 		}
 	}
 	queueLogger.Info(ctx, "job id: %s done", job.JobID)
