@@ -13,6 +13,10 @@ import (
 
 func WithRequestLogMiddleware() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		if ctx.Request.URL.Path == "/status" {
+			ctx.Next()
+			return
+		}
 		logger := ctx.MustGet("logger").(*helper.Logger)
 		startTime := time.Now()
 
