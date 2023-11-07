@@ -25,12 +25,13 @@ type DBOption struct {
 	User     string
 	Password string
 	DBName   string
+	SSLMode  string // enable or disable
 }
 
 func InitDB(option DBOption) {
 	once.Do(func() {
 		var err error
-		DB, err = sql.Open("pgx", fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable TimeZone=Asia/Taipei", option.Host, option.Port, option.User, option.Password, option.DBName))
+		DB, err = sql.Open("pgx", fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s TimeZone=Asia/Taipei", option.Host, option.Port, option.User, option.Password, option.DBName, option.SSLMode))
 		if err != nil {
 			panic(err)
 		}

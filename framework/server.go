@@ -43,6 +43,7 @@ func InitDB() {
 		User:     viper.GetString("DB_USER"),
 		Password: viper.GetString("DB_PASSWORD"),
 		DBName:   viper.GetString("DB_NAME"),
+		SSLMode:  viper.GetString("DB_SSL_MODE"),
 	}
 	helper.InitDB(dbOption)
 }
